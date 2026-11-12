@@ -20,8 +20,8 @@
 
     // 2. PASTE YOUR 2 POLAR CHECKOUT LINKS INSIDE THE QUOTES ON LINES 21 & 22:
     //    (Or add POLAR_MONTHLY_URL and POLAR_YEARLY_URL in Vercel Environment Variables!)
-    monthlyCheckoutUrl: "",
-    yearlyCheckoutUrl: "",
+    monthlyCheckoutUrl: "https://buy.polar.sh/polar_cl_uqnhvuNEJbJIRukI68Mzf4MaIK0qxg6Ahv1NG3VGswL",
+    yearlyCheckoutUrl: "https://buy.polar.sh/polar_cl_1tuLT1HXav69GubtL6vBm1ja2HZHE6SJFbscT2bNqsH",
 
     // 3. Free Taster Limits (generous enough for 5-star reviews, converts to MRR):
     freeTriggersAllowed: 1,
