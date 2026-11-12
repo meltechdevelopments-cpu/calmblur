@@ -1,0 +1,21 @@
+{
+  "name": "CalmBlur — Auto-Blur & Smart TV Sofa Buzz",
+  "short_name": "CalmBlur",
+  "description": "Auto-blur and mute phobia, sensory & misophonia triggers on streaming + Smart TV Sofa Buzz phone companion.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d171e",
+  "theme_color": "#14b8a6",
+  "icons": [
+    {
+      "src": "/icon128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

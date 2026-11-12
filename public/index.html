@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d171e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CalmBlur" />
+  <title>CalmBlur — Phobia, Misophonia &amp; Trigger Auto-Blur + Smart TV Sofa Buzz</title>
+  <meta name="description" content="Auto-blur &amp; mute vomit, chewing/misophonia, dog harm, spiders, needles, flashing lights &amp; swearing on Netflix, Prime, Disney+ &amp; YouTube — plus Phone Sofa Buzz alerts for Smart TVs." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="/icon128.png" />
+  <link rel="apple-touch-icon" href="/icon192.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Dimmed Living-Room Night Overlay when Sofa TV Mode is dimmed -->
+  <div id="nightDimOverlay" class="night-dim-overlay hidden" aria-hidden="true">
+    <div class="night-dim-card">
+      <div class="night-dim-status" id="nightDimStatusText">🌙 Sofa Buzz Active · Watching Quietly</div>
+      <div class="night-dim-clock" id="nightDimClockText">00:00</div>
+      <div class="night-dim-next" id="nightDimNextText">Phone stays awake &amp; will vibrate + chime 15s before any scene.</div>
+      <button type="button" id="exitNightDimBtn" class="btn-secondary">Wake Full Screen</button>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <img src="/icon128.png" alt="CalmBlur icon" class="brand-icon" width="34" height="34" />
+        <div>
+          <span class="brand-name">CalmBlur</span>
+          <span class="brand-sub">Streaming Shield + Smart TV Buzz</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span id="planStatusPill" class="status-pill">Free · 1 Shield Active</span>
+        <button type="button" id="openKeyModalBtn" class="btn-ghost">🔑 Enter Key</button>
+        <button type="button" id="openUpgradeModalBtn" class="btn-primary btn-sm">✨ Get Pass · £3.99/mo</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-wrap">
+    <!-- Calm, uncrowded Hero -->
+    <section class="hero">
+      <div class="hero-badge">Works on Laptop Browsers <strong>&amp;</strong> Smart TVs via Phone Sofa Buzz</div>
+      <h1>Watch anything without the panic spike.</h1>
+      <p class="hero-lead">
+        Automatically <strong>frost-blurs &amp; mutes</strong> trigger moments on Netflix, Prime Video, Disney+, YouTube &amp; iPlayer — or gently <strong>buzzes your phone 15 seconds early</strong> when watching on your living-room Smart TV.
+      </p>
+
+      <!-- Step 1: Pick Your Shields (1 Free, All 10 with Pass) -->
+      <div class="shield-picker-card">
+        <div class="shield-picker-head">
+          <div>
+            <strong>Your Active Shields</strong>
+            <span class="muted-inline" id="shieldCountHint">(Pick any 1 free — unlock all 10 + custom words with Pass)</span>
+          </div>
+          <div class="action-mode-wrap">
+            <label for="defaultActionSelect" class="sr-only">Shield style</label>
+            <select id="defaultActionSelect" class="select-compact">
+              <option value="blur_mute">🌫️ CalmBlur + Mute (Keep Subtitles)</option>
+              <option value="mute_only">🔇 Mute Audio Only (Best for Chewing/Swears)</option>
+              <option value="skip_scene">⏭️ Auto-Skip Timestamped Scenes</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="triggerChipsGrid" class="chips-grid" role="group" aria-label="Trigger categories"></div>
+
+        <!-- Custom words bar (Pro feature) -->
+        <div class="custom-words-row">
+          <input type="text" id="customWordInput" class="input-compact" placeholder="➕ Add custom caption word (e.g. hospital, choking, wasp)..." />
+          <button type="button" id="addCustomWordBtn" class="btn-secondary btn-sm">Add Word</button>
+          <div id="customWordsList" class="custom-tags"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 Clean Mode Tabs (Zero Clutter!) -->
+    <nav class="mode-tabs" aria-label="CalmBlur tools">
+      <button type="button" class="mode-tab active" data-tab="sofa">📱 Smart TV "Sofa Buzz"</button>
+      <button type="button" class="mode-tab" data-tab="demo">🎬 Watch Live Blur Demo</button>
+      <button type="button" class="mode-tab" data-tab="search">🔍 Search Shows &amp; Movies</button>
+    </nav>
+
+    <!-- TAB 1: PHONE "SOFA TV BUZZ" MODE FOR SMART TVs -->
+    <section id="tab-sofa" class="tab-panel">
+      <div class="card sofa-card">
+        <div class="sofa-header">
+          <div>
+            <h2>📱 Smart TV "Sofa Buzz" Companion</h2>
+            <p class="muted-text">Watching Netflix, Sky, Disney+ or Prime on your big TV? Sync this timer when your episode starts — your phone stays awake on the sofa and warns you <strong>15 seconds before</strong> a scene hits.</p>
+          </div>
+          <button type="button" id="installPhoneGuideBtn" class="btn-ghost btn-sm">📲 Add to Phone Home Screen</button>
+        </div>
+
+        <div class="sofa-controls-row">
+          <div class="sofa-select-wrap">
+            <label for="sofaTitleSelect" class="field-label">1. Choose Movie or Episode</label>
+            <select id="sofaTitleSelect" class="input-full"></select>
+          </div>
+          <div class="sofa-start-at-wrap">
+            <label for="sofaStartOffsetInput" class="field-label">Start from (MM:SS)</label>
+            <input type="text" id="sofaStartOffsetInput" class="input-full" value="00:00" placeholder="00:00" />
+          </div>
+        </div>
+
+        <!-- Big Calm TV Status Display -->
+        <div id="sofaLiveBox" class="sofa-live-box state-idle">
+          <div class="sofa-live-top">
+            <span id="sofaStateBadge" class="sofa-badge">Ready to Sync</span>
+            <span id="sofaTimerDisplay" class="sofa-clock">00:00</span>
+          </div>
+          <div id="sofaMainMessage" class="sofa-message">
+            Press <strong>Play</strong> on your TV remote and tap <strong>Sync With TV</strong> below at the same moment.
+          </div>
+          <div id="sofaSkipHint" class="sofa-skip-hint hidden"></div>
+        </div>
+
+        <div class="sofa-buttons-row">
+          <button type="button" id="sofaPlayPauseBtn" class="btn-primary btn-lg">▶ Sync With TV (Start)</button>
+          <button type="button" id="sofaBack10Btn" class="btn-secondary" title="Back 10 seconds">-10s</button>
+          <button type="button" id="sofaFwd10Btn" class="btn-secondary" title="Forward 10 seconds">+10s</button>
+          <button type="button" id="sofaNightDimBtn" class="btn-secondary">🌙 Dim Phone Screen</button>
+          <button type="button" id="sofaTestBuzzBtn" class="btn-ghost">🔔 Test Buzz &amp; Chime</button>
+        </div>
+
+        <!-- Upcoming scene preview strip (spoiler-safe!) -->
+        <div id="sofaScenesSummary" class="sofa-scenes-summary"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: INTERACTIVE LIVE AUTO-BLUR DEMO PLAYER -->
+    <section id="tab-demo" class="tab-panel hidden">
+      <div class="card">
+        <div class="demo-head">
+          <div>
+            <h2>🎬 See CalmBlur Work in 20 Seconds</h2>
+            <p class="muted-text">Press play below to see how the browser extension reads live <code>[CC]</code> captions in real time — frost-blurring &amp; muting trigger cues while keeping clean plot dialogue readable.</p>
+          </div>
+          <button type="button" id="demoStartBtn" class="btn-primary">▶ Play 24s Live Demo</button>
+        </div>
+
+        <div class="cinema-frame" id="demoCinemaFrame">
+          <!-- Simulated streaming video canvas -->
+          <div class="cinema-visual" id="demoVideoSurface">
+            <div class="cinema-road-scene">
+              <div class="cinema-moon"></div>
+              <div class="cinema-hills"></div>
+              <div class="cinema-car-dash">
+                <span class="cinema-actor-tag" id="demoSceneVisualLabel">🚗 Late-Night Drive · Episode 2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating CalmBlur Shield Pill (stays crisp above the blurred video!) -->
+          <div id="demoShieldBanner" class="calmblur-overlay-pill hidden">
+            <div class="pill-title" id="demoShieldTitle">🛡️ CalmBlur Active · Vomit Cue Shielded</div>
+            <div class="pill-sub" id="demoShieldSub">Video blurred &amp; audio muted · Clearing automatically...</div>
+          </div>
+
+          <!-- Subtitle bar (kept above the blur so plot isn't lost!) -->
+          <div class="cinema-captions" id="demoCaptionBar">
+            Tap "Play 24s Live Demo" above to test Vomit, Misophonia &amp; Swear shielding live.
+          </div>
+
+          <div class="cinema-progress-wrap">
+            <div id="demoProgressBar" class="cinema-progress-bar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SEARCH 35+ CURATED SHOWS & ADD COMMUNITY SCENE -->
+    <section id="tab-search" class="tab-panel hidden">
+      <div class="card">
+        <div class="search-head">
+          <h2>🔍 Trigger &amp; Comfort Show Finder</h2>
+          <p class="muted-text">Check exact timestamps before you watch — or send any title straight into Smart TV Sofa Buzz in 1 tap.</p>
+        </div>
+
+        <div class="search-bar-row">
+          <input type="search" id="titleSearchInput" class="input-full" placeholder="Search title or trigger (e.g. Lizzie Borden, Knives Out, Spiders, Dog, Safe)..." />
+        </div>
+
+        <div class="quick-filter-row" id="quickFilterRow">
+          <button type="button" class="filter-chip active" data-filter="">All Titles</button>
+          <button type="button" class="filter-chip" data-filter="safe">✅ 100% Safe Comfort Picks</button>
+          <button type="button" class="filter-chip" data-filter="emetophobia">🤢 Vomit</button>
+          <button type="button" class="filter-chip" data-filter="pet_harm">🐕 Dog / Pet</button>
+          <button type="button" class="filter-chip" data-filter="spiders">🕷️ Spiders</button>
+          <button type="button" class="filter-chip" data-filter="misophonia">🔇 Misophonia</button>
+          <button type="button" class="filter-chip" data-filter="needles">💉 Needles</button>
+        </div>
+
+        <div id="titlesListContainer" class="titles-grid"></div>
+
+        <!-- Clean collapsible Community Timestamp Form -->
+        <details class="community-details">
+          <summary>➕ Spotted a trigger scene not listed yet? Tag a timestamp (saves instantly)</summary>
+          <form id="addSceneForm" class="add-scene-form">
+            <div class="form-grid-2">
+              <div>
+                <label class="field-label" for="newSceneTitle">Movie / Show &amp; Episode</label>
+                <input type="text" id="newSceneTitle" class="input-full" required placeholder="e.g. Bridgerton S3 Ep 2" />
+              </div>
+              <div>
+                <label class="field-label" for="newScenePlatform">Platform</label>
+                <input type="text" id="newScenePlatform" class="input-full" value="Netflix" required />
+              </div>
+              <div>
+                <label class="field-label" for="newSceneCategory">Trigger Type</label>
+                <select id="newSceneCategory" class="input-full"></select>
+              </div>
+              <div class="start-end-pair">
+                <div>
+                  <label class="field-label" for="newSceneStart">Starts (MM:SS)</label>
+                  <input type="text" id="newSceneStart" class="input-full" required placeholder="14:20" />
+                </div>
+                <div>
+                  <label class="field-label" for="newSceneEnd">Ends (MM:SS)</label>
+                  <input type="text" id="newSceneEnd" class="input-full" required placeholder="14:55" />
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <label class="field-label" for="newSceneCue">Gentle Early Cue (no graphic detail)</label>
+              <input type="text" id="newSceneCue" class="input-full" placeholder="e.g. Character steps out of carriage holding stomach" />
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top:12px;">Save Scene to My CalmBlur</button>
+          </form>
+        </details>
+      </div>
+    </section>
+
+    <!-- Laptop Browser Extension Download Strip -->
+    <section class="extension-strip card">
+      <div>
+        <h3>💻 Watching on a Laptop or Desktop?</h3>
+        <p class="muted-text">Install the CalmBlur browser add-on for automatic <code>[CC]</code> caption screen-blurring, swear/chewing muting &amp; panic-blur (<code>Alt + B</code>) on Netflix, Prime Video, Disney+, YouTube &amp; BBC iPlayer.</p>
+      </div>
+      <div class="extension-btns">
+        <a id="downloadFirefoxBtn" href="/calmblur-firefox-addon.zip" class="btn-secondary" download>🦊 Get Firefox Add-On</a>
+        <a id="downloadChromeBtn" href="/calmblur-chrome-extension.zip" class="btn-ghost" download>🌐 Chrome / Edge (.zip)</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <span>CalmBlur · 100% On-Device Privacy · Works alongside your existing streaming accounts</span>
+    <span><a href="/privacy.html">Privacy Policy</a></span>
+  </footer>
+
+  <!-- MODAL 1: UPGRADE PASS (£3.99/mo or £24.99/yr) -->
+  <div id="upgradeModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="upgradeModalTitle">✨ Unlock Full CalmBlur Pass</h2>
+        <button type="button" class="modal-close" data-close="upgradeModal" aria-label="Close">✕</button>
+      </div>
+      <p class="muted-text" style="margin-top:0;">
+        75%–90% cheaper than VidAngel ($99/yr) &amp; ClearPlay ($80/yr). Cancel anytime in 1 click.
+      </p>
+
+      <ul class="pass-perks">
+        <li>✅ <strong>All 10 Trigger Shields at Once</strong> (Vomit, Misophonia Chewing, Dog Harm, Spiders, Needles, Strobe, Gore, SA/Trauma, Swearing + Custom Words)</li>
+        <li>✅ <strong>Unlimited Smart TV "Sofa Buzz" Sessions</strong> on iPhone &amp; Android</li>
+        <li>✅ <strong>All 5 Streaming Platforms</strong> (Netflix, Prime Video, Disney+, YouTube &amp; BBC iPlayer)</li>
+        <li>✅ <strong>Up to 5 Household Devices</strong> with 1 Pass Key</li>
+      </ul>
+
+      <div class="pricing-cards-pair">
+        <div class="price-box">
+          <div class="price-tag-top">Flexible Monthly</div>
+          <div class="price-amount">£3.99<span>/mo</span></div>
+          <div class="price-usd">~$4.99/mo USD · Cancel anytime</div>
+          <a id="buyMonthlyBtn" href="#checkout-monthly" target="_blank" rel="noopener" class="btn-secondary btn-full">Start Monthly (£3.99)</a>
+        </div>
+
+        <div class="price-box featured">
+          <div class="price-badge-save">BEST VALUE · SAVE 48%</div>
+          <div class="price-tag-top">Annual Household Pass</div>
+          <div class="price-amount">£24.99<span>/yr</span></div>
+          <div class="price-usd">Just £2.08/mo (~$29.99/yr USD)</div>
+          <a id="buyYearlyBtn" href="#checkout-yearly" target="_blank" rel="noopener" class="btn-primary btn-full">Get Yearly (£24.99)</a>
+        </div>
+      </div>
+
+      <p id="checkoutSetupNotice" class="setup-hint hidden">
+        Founder note: Paste your Polar Monthly &amp; Yearly checkout links in <code>public/shared/config.js</code> (or Vercel Environment Variables) — or click "Already have a Pass key?" below to test with <code>CALM-VIP-2026</code>!
+      </p>
+
+      <div class="modal-foot">
+        <button type="button" id="switchToKeyModalBtn" class="btn-link">Already subscribed? Enter your Polar Pass key →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ENTER POLAR PASS KEY -->
+  <div id="keyModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="keyModalTitle">
+    <div class="modal-card modal-sm">
+      <div class="modal-head">
+        <h2 id="keyModalTitle">🔑 Activate Your CalmBlur Pass</h2>
+        <button type="button" class="modal-close" data-close="keyModal" aria-label="Close">✕</button>
+      </div>
+      <p class="muted-text" style="margin-top:0;">
+        Paste the License Key from your Polar confirmation email below. Works on up to 5 phones &amp; laptops in your home.
+      </p>
+      <input type="text" id="licenseKeyInput" class="input-full" placeholder="e.g. CALMBLUR-XXXX-XXXX-XXXX" autocomplete="off" />
+      <div id="licenseKeyFeedback" class="key-feedback hidden"></div>
+      <div style="display:flex; gap:10px; margin-top:14px;">
+        <button type="button" id="verifyKeyBtn" class="btn-primary btn-full">Activate Pass</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ADD TO PHONE HOME SCREEN (SMART TV REMOTE SETUP) -->
+  <div id="phoneGuideModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="phoneGuideTitle">
+    <div class="modal-card modal-sm">
+      <div class="modal-head">
+        <h2 id="phoneGuideTitle">📲 Save Sofa Buzz to Your Phone</h2>
+        <button type="button" class="modal-close" data-close="phoneGuideModal" aria-label="Close">✕</button>
+      </div>
+      <p class="muted-text" style="margin-top:0;">Turn CalmBlur into a 1-tap Smart TV app on your sofa:</p>
+      <div class="guide-steps">
+        <p><strong>🍏 On iPhone / iPad (Safari):</strong><br/>Tap the <strong>Share</strong> icon (square with arrow ↑ at the bottom) → scroll down and tap <strong>"Add to Home Screen"</strong>.</p>
+        <p><strong>🤖 On Android (Chrome):</strong><br/>Tap the <strong>⋮ Menu</strong> (top right) → tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</p>
+        <p class="muted-text" style="font-size:0.86rem;">Tip: Keep your phone off Silent Mode if you want the soft chime alongside the screen alert!</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/shared/config.js"></script>
+  <script src="/shared/calmblur-engine.js"></script>
+  <script src="/calmblur-ui.js"></script>
+</body>
+</html>
